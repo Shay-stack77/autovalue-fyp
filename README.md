@@ -1,7 +1,7 @@
 # Machine Learning-Based Predictive Valuation System for Second-Hand Vehicles
 
 **Final Year Project — BSc (Hons) Computing, Arden University**
-**Author:** Syed Shayaan Ali Ali (STU195050) · **Ethics ref:** P17519 (Low Risk, approved)
+**Author:** Syed Shayaan Ali Ali (STU195050) · **Ethics ref:** P17519 
 
 **🚗 Live demo:** <https://autovalue-fyp.onrender.com> — enter a car's details for a market-adjusted
 valuation with a confidence range, deal verdict, value breakdown, 5-year depreciation forecast and
