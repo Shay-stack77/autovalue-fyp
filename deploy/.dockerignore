@@ -1,0 +1,17 @@
+# Exclude dev/build artifacts from the container image
+.venv/
+.git/
+.gitignore
+__pycache__/
+*.pyc
+.pytest_cache/
+data/raw/
+data/cleaned/
+docs/
+notebooks/
+tests/
+scripts/
+.env
+*.md
+.idea/
+.vscode/

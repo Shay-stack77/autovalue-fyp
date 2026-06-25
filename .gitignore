@@ -1,0 +1,48 @@
+﻿# Python
+__pycache__/
+*.py[cod]
+*.so
+*.egg-info/
+.venv/
+venv/
+env/
+.pytest_cache/
+.ipynb_checkpoints/
+
+# Data files (keep folder, ignore large content)
+data/raw/*.csv
+data/raw/*.zip
+data/cleaned/*.csv
+!data/raw/.gitkeep
+!data/cleaned/.gitkeep
+
+# Models (ignore large binaries, but keep the artefacts the live deploy serves)
+src/models/*.joblib
+src/models/*.pkl
+!src/models/best_model.pkl
+!src/models/quantile_models.pkl
+!src/models/corpus.pkl
+
+# IDE
+.vscode/
+.idea/
+*.swp
+.DS_Store
+
+# OS
+Thumbs.db
+
+# Secrets
+.env
+*.local
+
+# local dev/tooling â€” not part of the artefact
+.claude/
+HANDOFF.md
+
+# Word temporary owner/lock files
+~$*.docx
+
+# Official Arden cover template (build input; not redistributed)
+docs/assets/
+

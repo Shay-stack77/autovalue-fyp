@@ -1,0 +1,23 @@
+{
+  "market_factor": 1.13,
+  "market_factor_basis": "Auto Trader Retail Price Index: UK used-car values sat ~13% above the 2020 baseline by Q1 2025 (index 113.2). Applied to bring the 2020-trained predictions toward the current market.",
+  "interval_alphas": {
+    "low": 0.1,
+    "mid": 0.5,
+    "high": 0.9
+  },
+  "interval_coverage": {
+    "coverage": 0.7759,
+    "mean_width_gbp": 3844.75
+  },
+  "baseline_car": {
+    "brand": "Ford",
+    "model": "Fiesta",
+    "transmission": "Manual",
+    "fuelType": "Petrol",
+    "mileage": 17531.0,
+    "engineSize": 1.5,
+    "age": 8.0
+  },
+  "trained_at": "2026-06-16T13:52:39"
+}

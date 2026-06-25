@@ -1,0 +1,16 @@
+# Render Blueprint — deploys the FYP valuation API + frontend as one free web service.
+# Render reads this file automatically when you create a "Blueprint" from the repo.
+# Docs: https://render.com/docs/blueprint-spec
+services:
+  - type: web
+    name: fyp-used-car-valuation
+    runtime: python
+    plan: free
+    region: frankfurt          # closest free region to the UK
+    buildCommand: pip install -r deploy/requirements-production.txt
+    # 1 worker + threads keeps the ML models in a single ~400 MB process (free tier = 512 MB)
+    startCommand: gunicorn --bind 0.0.0.0:$PORT --workers 1 --threads 4 --timeout 120 wsgi:app
+    healthCheckPath: /health
+    envVars:
+      - key: PYTHON_VERSION
+        value: "3.12.10"

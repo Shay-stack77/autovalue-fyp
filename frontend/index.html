@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="description" content="Machine-learning valuation and buying assistant for second-hand UK cars — price range, deal check, value breakdown, depreciation forecast and comparable cars." />
+  <title>AutoValue — UK Used Car Valuation &amp; Buying Assistant</title>
+  <link rel="icon" href="data:image/svg+xml,&lt;svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'&gt;&lt;rect width='24' height='24' rx='6' fill='%231E40AF'/&gt;&lt;path fill='%23ffffff' d='M2 16.4 C2 15.7 2.5 15.2 3.2 15.2 L5 15.1 C5.6 13.8 6.9 12.9 8.4 12.9 L9.7 12.9 L11.9 9.9 C12.5 9.1 13.4 8.7 14.4 8.7 L15.5 8.7 C17 8.7 18.3 9.6 18.9 11 L19.9 13.1 L21 13.4 C21.6 13.6 22 14.3 22 15 L22 15.5 C22 16 21.6 16.4 21.1 16.4 Z'/&gt;&lt;circle cx='7.7' cy='16.4' r='2.4' fill='%23ffffff'/&gt;&lt;circle cx='16.6' cy='16.4' r='2.4' fill='%23ffffff'/&gt;&lt;circle cx='7.7' cy='16.4' r='0.95' fill='%23F59E0B'/&gt;&lt;circle cx='16.6' cy='16.4' r='0.95' fill='%23F59E0B'/&gt;&lt;/svg&gt;" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600;700&family=Fira+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['"Fira Sans"', 'ui-sans-serif', 'system-ui', 'sans-serif'],
+            mono: ['"Fira Code"', 'ui-monospace', 'monospace'],
+          },
+          colors: {
+            brand:  { DEFAULT: '#1E40AF', light: '#3B82F6', dark: '#1E3A8A' },
+            accent: { DEFAULT: '#D97706', light: '#F59E0B' },
+          },
+        },
+      },
+    };
+  </script>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body class="min-h-screen bg-slate-50 text-slate-900 dark:bg-slate-950 dark:text-slate-100 font-sans antialiased">
+
+  <a href="#main" class="skip-link">Skip to content</a>
+
+  <!-- ===================== Header ===================== -->
+  <header class="sticky top-0 z-30 backdrop-blur bg-white/80 dark:bg-slate-950/80 border-b border-slate-200 dark:border-slate-800">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between gap-4">
+      <div class="flex items-center gap-3 min-w-0">
+        <span class="grid place-items-center w-9 h-9 rounded-xl av-logo text-white shrink-0" aria-hidden="true">
+          <svg viewBox="0 0 24 24" class="w-5 h-5" fill="none">
+            <path fill="#ffffff" d="M2 16.4 C2 15.7 2.5 15.2 3.2 15.2 L5 15.1 C5.6 13.8 6.9 12.9 8.4 12.9 L9.7 12.9 L11.9 9.9 C12.5 9.1 13.4 8.7 14.4 8.7 L15.5 8.7 C17 8.7 18.3 9.6 18.9 11 L19.9 13.1 L21 13.4 C21.6 13.6 22 14.3 22 15 L22 15.5 C22 16 21.6 16.4 21.1 16.4 Z"/>
+            <circle cx="7.7" cy="16.4" r="2.4" fill="#ffffff"/>
+            <circle cx="16.6" cy="16.4" r="2.4" fill="#ffffff"/>
+            <circle cx="7.7" cy="16.4" r="0.95" fill="#F59E0B"/>
+            <circle cx="16.6" cy="16.4" r="0.95" fill="#F59E0B"/>
+            <path d="M3 19.1 L21 19.1" stroke="#F59E0B" stroke-width="1.4" stroke-linecap="round"/>
+          </svg>
+        </span>
+        <div class="min-w-0">
+          <p class="font-semibold tracking-tight leading-none truncate">AutoValue</p>
+          <p class="text-xs text-slate-500 dark:text-slate-400 truncate">UK Used-Car Valuation &amp; Buying Assistant</p>
+        </div>
+      </div>
+      <div class="flex items-center gap-2 sm:gap-3">
+        <span id="model-status" class="hidden sm:inline-flex items-center gap-1.5 text-xs font-medium px-3 py-1.5 rounded-full bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-300">
+          <span class="w-2 h-2 rounded-full bg-slate-400" id="status-dot"></span><span id="status-text">checking…</span>
+        </span>
+        <button id="print-btn" type="button" title="Print or save this valuation"
+          class="hidden sm:grid place-items-center w-9 h-9 rounded-lg text-slate-600 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-800 transition-colors cursor-pointer focus-ring" aria-label="Print or save this valuation">
+          <svg viewBox="0 0 24 24" class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9V2h12v7M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2M6 14h12v8H6z"/></svg>
+        </button>
+        <button id="theme-btn" type="button" title="Toggle dark mode"
+          class="grid place-items-center w-9 h-9 rounded-lg text-slate-600 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-800 transition-colors cursor-pointer focus-ring" aria-label="Toggle dark mode">
+          <svg id="icon-sun" viewBox="0 0 24 24" class="w-5 h-5 hidden dark:block" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M5 5l1.5 1.5M17.5 17.5 19 19M2 12h2M20 12h2M5 19l1.5-1.5M17.5 6.5 19 5"/></svg>
+          <svg id="icon-moon" viewBox="0 0 24 24" class="w-5 h-5 block dark:hidden" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main id="main" class="max-w-6xl mx-auto px-4 sm:px-6 py-8 sm:py-12">
+
+    <!-- ===================== View nav ===================== -->
+    <nav id="view-nav" class="inline-flex p-1 mb-8 rounded-xl bg-slate-100 dark:bg-slate-800/70" aria-label="Views">
+      <button type="button" data-view="value" class="view-tab is-active" aria-current="page">Value</button>
+      <button type="button" data-view="garage" class="view-tab">Garage <span class="tab-count" id="garage-count">0</span></button>
+      <button type="button" data-view="compare" class="view-tab">Compare <span class="tab-count" id="compare-count">0</span></button>
+    </nav>
+
+    <!-- ===================== Value view ===================== -->
+    <div id="view-value">
+
+    <!-- ===================== Intro ===================== -->
+    <section class="mb-8 av-enter av-enter-1">
+      <div class="flex flex-col lg:flex-row lg:items-center lg:gap-10">
+        <div class="max-w-2xl">
+          <h1 class="text-2xl sm:text-3xl font-bold tracking-tight">Know what a used car is really worth.</h1>
+          <p class="mt-2 text-slate-600 dark:text-slate-400">
+            Enter a car's details for a market-adjusted valuation — with a confidence range, a deal verdict on any asking price,
+            a breakdown of what drives the value, a five-year depreciation forecast and the closest comparable cars in our data.
+          </p>
+        </div>
+        <div class="hidden lg:block shrink-0 ml-auto" aria-hidden="true">
+          <svg viewBox="0 0 300 210" class="w-64 xl:w-80 h-auto" fill="none" xmlns="http://www.w3.org/2000/svg" role="presentation">
+            <defs>
+              <radialGradient id="avGlow" cx="42%" cy="46%" r="60%">
+                <stop offset="0" stop-color="#3B82F6" stop-opacity="0.16"/>
+                <stop offset="1" stop-color="#3B82F6" stop-opacity="0"/>
+              </radialGradient>
+            </defs>
+            <circle cx="135" cy="104" r="120" fill="url(#avGlow)"/>
+            <!-- the road rises ahead of the car into a value curve -->
+            <path d="M14 172 L118 172 C166 172 190 150 206 120 L258 58" stroke="#D97706" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+            <circle cx="206" cy="120" r="4" fill="#D97706"/>
+            <circle cx="258" cy="58" r="5" fill="#D97706"/>
+            <path d="M248 68 L259 56 L270 67" stroke="#D97706" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+            <!-- sleek coupe (same mark as the logo) resting on the flat road -->
+            <g transform="translate(22 90) scale(5)">
+              <path fill="#3B82F6" d="M2 16.4 C2 15.7 2.5 15.2 3.2 15.2 L5 15.1 C5.6 13.8 6.9 12.9 8.4 12.9 L9.7 12.9 L11.9 9.9 C12.5 9.1 13.4 8.7 14.4 8.7 L15.5 8.7 C17 8.7 18.3 9.6 18.9 11 L19.9 13.1 L21 13.4 C21.6 13.6 22 14.3 22 15 L22 15.5 C22 16 21.6 16.4 21.1 16.4 Z"/>
+              <circle cx="7.7" cy="16.4" r="2.4" fill="#1E40AF"/>
+              <circle cx="16.6" cy="16.4" r="2.4" fill="#1E40AF"/>
+              <circle cx="7.7" cy="16.4" r="0.95" fill="#F59E0B"/>
+              <circle cx="16.6" cy="16.4" r="0.95" fill="#F59E0B"/>
+            </g>
+          </svg>
+        </div>
+      </div>
+    </section>
+
+    <div class="grid lg:grid-cols-3 gap-6 lg:gap-8">
+
+      <!-- ===================== Form ===================== -->
+      <section class="lg:col-span-2 card p-5 sm:p-6 av-enter av-enter-2" aria-labelledby="form-heading">
+        <h2 id="form-heading" class="text-base font-semibold mb-1">Vehicle details</h2>
+        <p class="text-xs text-slate-500 dark:text-slate-400 mb-4">Try a preset, or fill the form in yourself.</p>
+
+        <div id="presets" class="flex flex-wrap gap-2 mb-5" role="group" aria-label="Example cars"></div>
+
+        <form id="predict-form" class="grid sm:grid-cols-2 gap-4" novalidate>
+          <div class="field">
+            <label for="brand">Brand</label>
+            <select name="brand" id="brand" required></select>
+          </div>
+          <div class="field">
+            <label for="model">Model</label>
+            <select name="model" id="model" required></select>
+          </div>
+          <div class="field">
+            <label for="year">Year</label>
+            <input type="number" name="year" id="year" min="1990" max="2025" value="2019" required inputmode="numeric" />
+          </div>
+          <div class="field">
+            <label for="mileage">Mileage</label>
+            <input type="number" name="mileage" id="mileage" min="0" max="500000" value="30000" required inputmode="numeric" />
+          </div>
+          <div class="field">
+            <label for="transmission">Transmission</label>
+            <select name="transmission" id="transmission" required></select>
+          </div>
+          <div class="field">
+            <label for="fuelType">Fuel type</label>
+            <select name="fuelType" id="fuelType" required></select>
+          </div>
+          <div class="field">
+            <label for="engineSize">Engine size (L)</label>
+            <input type="number" name="engineSize" id="engineSize" step="0.1" min="0.5" max="8" value="2.0" required inputmode="decimal" />
+          </div>
+          <div class="field">
+            <label for="askingPrice">Asking price <span class="text-slate-500 dark:text-slate-400 font-normal">(optional)</span></label>
+            <input type="number" name="askingPrice" id="askingPrice" min="0" max="500000" placeholder="e.g. 24000" inputmode="numeric" />
+          </div>
+
+          <button type="submit" id="submit-btn"
+            class="sm:col-span-2 mt-1 inline-flex items-center justify-center gap-2 bg-brand hover:bg-brand-dark text-white font-medium py-3 rounded-xl transition-colors cursor-pointer focus-ring disabled:opacity-60">
+            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="m7 14 4-4 4 4 5-6"/></svg>
+            <span>Value this car</span>
+          </button>
+        </form>
+        <p class="text-xs text-slate-500 dark:text-slate-400 mt-3">Enter an asking price to get a deal rating. Estimates are market-adjusted toward current UK prices.</p>
+      </section>
+
+      <!-- ===================== Headline KPI ===================== -->
+      <aside class="card p-5 sm:p-6 flex flex-col av-enter av-enter-3" aria-labelledby="estimate-heading">
+        <h2 id="estimate-heading" class="text-base font-semibold mb-4">Estimated value</h2>
+        <div id="headline" class="flex-1 flex flex-col items-center justify-center text-center">
+          <div class="empty-state text-sm text-slate-500 dark:text-slate-400">
+            <svg class="w-10 h-10 mx-auto mb-3 text-slate-300 dark:text-slate-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
+            Fill in the form to value a car.
+          </div>
+        </div>
+      </aside>
+    </div>
+
+    <!-- ===================== Results ===================== -->
+    <div id="results" class="hidden mt-6 lg:mt-8 grid lg:grid-cols-2 gap-6 lg:gap-8">
+
+      <section id="deal-card" class="hidden card p-5 sm:p-6" aria-labelledby="deal-heading">
+        <h3 id="deal-heading" class="card-title">Deal check</h3>
+        <div id="deal-body"></div>
+      </section>
+
+      <section id="why-card" class="card p-5 sm:p-6" aria-labelledby="why-heading">
+        <h3 id="why-heading" class="card-title">Why this price?</h3>
+        <p class="card-sub">How each detail moves the value versus an average car in the data.</p>
+        <div id="why-body"></div>
+      </section>
+
+      <section id="depr-card" class="card p-5 sm:p-6" aria-labelledby="depr-heading">
+        <h3 id="depr-heading" class="card-title">5-year depreciation forecast</h3>
+        <p class="card-sub">Projected value as the car ages and gains average mileage.</p>
+        <div id="depr-body"></div>
+      </section>
+
+      <section id="comp-card" class="card p-5 sm:p-6" aria-labelledby="comp-heading">
+        <h3 id="comp-heading" class="card-title">Comparable cars in the data</h3>
+        <p class="card-sub">The closest matches to your car and what they were listed at.</p>
+        <div id="comp-body"></div>
+      </section>
+
+    </div>
+
+    <!-- save / compare actions (appear after a valuation) -->
+    <div id="result-actions" class="hidden mt-6 flex flex-wrap gap-3">
+      <button type="button" id="save-btn" class="action-btn">
+        <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><path d="M17 21v-8H7v8M7 3v5h8"/></svg>
+        Save to garage
+      </button>
+      <button type="button" id="addcompare-btn" class="action-btn">
+        <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M3 12h18M3 18h12"/></svg>
+        Add to compare
+      </button>
+    </div>
+
+    </div><!-- /view-value -->
+
+    <!-- ===================== Garage view ===================== -->
+    <section id="view-garage" hidden aria-labelledby="garage-heading">
+      <div class="flex items-center justify-between mb-2">
+        <h1 id="garage-heading" class="text-2xl font-bold tracking-tight">Your garage</h1>
+        <button type="button" id="clear-garage" class="hidden text-xs text-rose-700 dark:text-rose-400 hover:underline cursor-pointer focus-ring">Clear all</button>
+      </div>
+      <p class="text-sm text-slate-600 dark:text-slate-400 mb-6">Valuations you save are stored only in this browser — no account, nothing sent to a server.</p>
+      <div id="garage-body"></div>
+    </section>
+
+    <!-- ===================== Compare view ===================== -->
+    <section id="view-compare" hidden aria-labelledby="compare-heading">
+      <h1 id="compare-heading" class="text-2xl font-bold tracking-tight mb-2">Compare cars</h1>
+      <p class="text-sm text-slate-600 dark:text-slate-400 mb-6">Up to four cars side by side. Add cars from a valuation or from your garage.</p>
+      <div id="compare-body"></div>
+    </section>
+
+  </main>
+
+  <footer class="max-w-6xl mx-auto px-4 sm:px-6 py-8 mt-4 border-t border-slate-200 dark:border-slate-800 text-xs text-slate-500 dark:text-slate-400">
+    <p>Built for Arden University FYP P17519 — Syed Shayaan Ali Ali (STU195050).</p>
+    <p class="mt-1">Estimates come from a gradient-boosted regression model trained on UK used-car listings, market-adjusted toward current prices. For guidance only, not a formal valuation.</p>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>
